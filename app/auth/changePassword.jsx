@@ -3,6 +3,7 @@ import { View, Text, TextInput, StatusBar, Platform } from "react-native";
 import HeroSection from "../../src/components/HeroSection";
 import Button from "../../src/components/Button";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 const ChangePasswordPage = () => {
     const router = useRouter();
     const [oldPassword, setOldPassword] = useState("");
@@ -25,10 +26,10 @@ const ChangePasswordPage = () => {
     };
 
     return (
-        <View className="flex-1">
+        <SafeAreaView className="flex-1 ">
             <StatusBar barStyle="light-content" backgroundColor="#0000ff" />
             <HeroSection />
-            <View className="p-4">
+            <View className=" flex-1 p-4 ">
                 <View className={`bg-[rgba(255,255,255,0.9)] rounded-xl p-6 ${Platform.OS === "ios" ? " shadow-sm" : ''
                     }`}
                     style={{ marginTop: -200, elevation: 5 }}>
@@ -78,7 +79,7 @@ const ChangePasswordPage = () => {
                     </View>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 

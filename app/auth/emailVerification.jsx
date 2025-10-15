@@ -6,7 +6,7 @@ import Button from "../../src/components/Button";
 import LoadingComponent from "../../src/components/LoadingComponent";
 import ModalComponent from "../../src/components/ModalComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 const EmailVerification = () => {
     const router = useRouter();
 
@@ -24,8 +24,6 @@ const EmailVerification = () => {
     const [modalMess, setModalMess] = useState("");
     const [modalErrorType, setModalErrorType] = useState("");
     const [isButton, setIsButton] = useState(true);
-    const [token, setToken] = useState("")
-
     const { trimmedEmail, changePassword, enableBtn, reastartEmail, resetEmail } = useLocalSearchParams();
 
     // Disable all buttons during block or loading
@@ -90,9 +88,8 @@ const EmailVerification = () => {
     // Submit OTP
     const submitCode = async () => {
         if (isBlocked) return;
-
         if (code.trim() === "") {
-            setOtpError("OTP is required!");
+            setOtpError("Field is required!");
             return;
         }
 
@@ -106,32 +103,31 @@ const EmailVerification = () => {
 
             const response = await result.json();
             console.log(response);
-
             //  If backend says success
             if (response.status === "success") {
                 setLoading(false);
                 setModalMess(response.data || "Email verified successfully!");
                 setModalErrorType("success");
-                const tokenValue = response.token;  // get token from response
-                setToken(tokenValue);
+                const tokens = {
+                    accessToken: response?.tokens?.access,
+                    accessExpires: response?.tokens?.accessExpires,
+                    issuedAt: response?.tokens?.issuedAt
+                };
                 try {
-                    await AsyncStorage.setItem("refreshToken", tokenValue);
-                    console.log("Token saved to AsyncStorage ");
-                } catch (err) {
-                    console.error("Failed to save token:", err);
-                }
-                // store in async storage
-                setModalVisibility(true);
-                setIsButton(false);
-                setTimeout(() => {
-                    setModalVisibility(false);
-                    router.push({
-                        pathname: changePassword ? "/auth/changePassword" : "/auth/registerNewUser",
-                        params: { trimmedEmail: changePassword ? resetEmail : trimmedEmail },
-                    });
-                }, 2000);
+                    await AsyncStorage.setItem("tokens", JSON.stringify(tokens));
+                    setModalVisibility(true);
+                    setIsButton(false);
+                    setTimeout(() => {
+                        setModalVisibility(false);
+                        router.push({
+                            pathname: changePassword ? "/auth/changePassword" : "/auth/registerNewUser",
+                            params: { trimmedEmail: changePassword ? resetEmail : trimmedEmail },
+                        });
+                    }, 2000);
 
-                setCode(""); // clear the input
+                } catch (err) {
+                    console.log("Failed to saved tokens:", err);
+                }
             }
 
             //  If backend says error
@@ -144,10 +140,12 @@ const EmailVerification = () => {
                         setModalMess("You’ve entered the wrong code 3 times. Try again after 3 minutes.");
                         setModalErrorType("error");
                         setModalVisibility(true);
+                        setIsButton(true)
                     } else {
                         setModalMess(response.data || "Invalid OTP. Please try again.");
                         setModalErrorType("error");
                         setModalVisibility(true);
+                        setIsButton(true)
                     }
                     return next;
                 });
@@ -165,6 +163,7 @@ const EmailVerification = () => {
             setModalMess("Something went wrong. Try again later.");
             setModalErrorType("error");
             setModalVisibility(true);
+            setIsButton(true)
         }
     };
 
@@ -215,11 +214,11 @@ const EmailVerification = () => {
 
 
     return (
-        <View>
+        <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="light-content" backgroundColor="#0000ff" />
             <HeroSection />
 
-            <View className="h-full p-4 mx-auto">
+            <View className=" p-4 mx-auto bg-white">
                 <View className={`bg-[rgba(255,255,255,0.9)] rounded-xl p-6 ${Platform.OS === "ios" ? " shadow-sm" : ''
                     }`}
                     style={{ marginTop: -300, elevation: 5 }}>
@@ -295,7 +294,7 @@ const EmailVerification = () => {
                 <View className="mt-3 px-3">
                     <Text className="text-2xl text-headercolor">
                         Already Registered?{" "}
-                        <TouchableOpacity disabled={isAllDisabled} onPress={() => router.push("/home")} className="pt-2">
+                        <TouchableOpacity disabled={isAllDisabled} onPress={() => router.push("/otherPages/home")} className="pt-2">
                             <Text className="text-blue underline text-xl">Login here</Text>
                         </TouchableOpacity>
                     </Text>
@@ -317,7 +316,7 @@ const EmailVerification = () => {
                 errorType={modalErrorType}
                 isButton={isButton}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 

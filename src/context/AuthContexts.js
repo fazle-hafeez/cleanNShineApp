@@ -47,8 +47,8 @@ export const AuthProvider = ({ children }) => {
   }
 
   //  Handle remember email
-  if (remember && userData?.email) {
-    await AsyncStorage.setItem("rememberedEmail", userData.email);
+  if (remember && userData?.username) {
+    await AsyncStorage.setItem("rememberedEmail", userData.username);
   } else {
     await AsyncStorage.removeItem("rememberedEmail");
   }

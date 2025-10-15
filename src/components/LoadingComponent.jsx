@@ -7,7 +7,7 @@ const LoadingComponent = ({ visible }) => {
       transparent={true}
       animationType="fade"
       visible={visible}
-      statusBarTranslucent
+      // statusBarTranslucent
     >
       <View className="flex-1 bg-black/80 justify-center items-center">
         <View className="">

@@ -9,68 +9,71 @@ export default function Dashboard() {
     const router = useRouter() // use  for routing ....
     return (
 
-        <ScrollView className="flex-1 bg-[#eef3f9]">
-            <View className="flex-row items-center bg-blue px-4 py-3">
-                <Entypo name="menu" size={24} color="white"  onPress={() => navigation.dispatch(DrawerActions.openDrawer())}/>
-                <Text className="text-white text-lg ml-3">Menu</Text>
+        <ScrollView className="flex-1  relative">
+            <View className="flex-1 bg-[#eef3f9]">
+            <View className="flex-row items-center bg-blue px-4 py-3 "
+            style={{position:'fixed'}}>
+                <Entypo name="menu" size={30} color="white"  onPress={() => navigation.dispatch(DrawerActions.openDrawer())}/>
+                <Text className="text-white text-xl ml-3">Menu</Text>
             </View>
 
             {/* Active Features */}
             <Section title="Active features">
-                <Feature icon={<MaterialIcons name="access-time" size={33} color="blue" />} label="Shifts data"
-                    onPress={() => router.push("dashboard/shiftsData")}
+                <Feature icon={<MaterialIcons name="access-time" size={38} color="blue" />} label="Shifts data"
+                    onPress={() => router.push("/dashboard/shiftsData")}
                 />
-                <Feature icon={<FontAwesome5 name="route" size={33} color="blue" />} label="Trips data"
-                    onPress={() => router.push("dashboard/tripsData")}
+                <Feature icon={<FontAwesome5 name="route" size={38} color="blue" />} label="Trips data"
+                    onPress={() => router.push("/dashboard/tripsData")}
                 />
-                <Feature icon={<FontAwesome5 name="gas-pump" size={33} color="blue" />} label="Fuel refills"
-                    onPress={() => router.push("dashboard/fuelRefills")}
+                <Feature icon={<FontAwesome5 name="gas-pump" size={38} color="blue" />} label="Fuel refills"
+                    onPress={() => router.push("/dashboard/fuelRefills")}
                 />
             </Section>
 
             {/* User Preferences */}
             <Section title="User preferences">
-                <Feature icon={<FontAwesome5 name="car" size={33} color="blue" />} label="My vehicles"
-                    onPress={() => router.push("dashboard/myVehicles")}
+                <Feature icon={<FontAwesome5 name="car" size={38} color="blue" />} label="My vehicles"
+                    onPress={() => router.push("/otherPages/myVehicles")}
                 />
-                <Feature icon={<FontAwesome5 name="file-alt" size={33} color="blue" />} label="My projects"
-                    onPress={() => router.push("dashboard/myProjects")}
+                <Feature icon={<FontAwesome5 name="file-alt" size={38} color="blue" />} label="My projects"
+                    onPress={() => router.push("/otherPages/myProjects")}
                 />
             </Section>
 
             {/* Future Features */}
             <Section title="Future features">
-                <Feature icon={<FontAwesome5 name="receipt" size={33} color="blue" />} label="Expenses"
-                    onPress={() => router.push("dashboard/expenses")}
+                <Feature icon={<FontAwesome5 name="receipt" size={38} color="blue" />} label="Expenses"
+                    onPress={() => router.push("/otherPages/expenses")}
                 />
-                <Feature icon={<FontAwesome5 name="user-clock" size={33} color="blue" />} label="Time spent"
-                    onPress={() => router.push("dashboard/timeSpent")}
+                <Feature icon={<FontAwesome5 name="user-clock" size={38} color="blue" />} label="Time spent"
+                    onPress={() => router.push("/otherPages/timeSpent")}
                 />
-                <Feature icon={<FontAwesome5 name="cubes" size={33} color="blue" />} label="Inventory"
-                    onPress={() => router.push("dashboard/inventory")}
+                <Feature icon={<FontAwesome5 name="cubes" size={38} color="blue" />} label="Inventory"
+                    onPress={() => router.push("/otherPages/inventory")}
                 />
-                <Feature icon={<FontAwesome6 name="circle-dollar-to-slot" size={33} color="blue" />} label="Savings"
-                    onPress={() => router.push("dashboard/savings")}
+                <Feature icon={<FontAwesome6 name="circle-dollar-to-slot" size={38} color="blue" />} label="Savings"
+                    onPress={() => router.push("/otherPages/savings")}
                 />
 
             </Section>
+            </View>
         </ScrollView>
     );
 }
 
 const Section = ({ title, children }) => (
-    <View className="bg-white m-4 rounded-lg p-4 shadow">
-        <Text className="text-xl font-medium border-b  border-orange-400 pb-2 mb-3">{title}</Text>
-        <View className="flex-row flex-wrap">{children}</View>
+    <View className="bg-white m-4 rounded-lg p-4 ">
+        <Text className="text-2xl font-medium border-b text-headercolor border-orange-400 pb-2 mb-3">{title}</Text>
+        <View className="flex-row flex-wrap justify-between">{children}</View>
     </View>
 );
 
 const Feature = ({ icon, label,onPress }) => (
-    <TouchableOpacity className="w-[30%] bg-gray-100 rounded-lg p-4 ml-2 items-center mb-3 shadow-sm"
+    <TouchableOpacity className=" w-[48%]  rounded-lg p-4 items-center mb-3  border border-gray-300"
         onPress={onPress}
         activeOpacity={0.7}
     >
         {icon}
-        <Text className="mt-2 text-center text-sm font-medium">{label}</Text>
+        <Text className="mt-3 text-center text-xl text-headercolor ">{label}</Text>
     </TouchableOpacity>
 );

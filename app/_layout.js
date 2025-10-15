@@ -3,14 +3,14 @@ import { View, ActivityIndicator } from "react-native";
 import { Stack } from "expo-router";
 import { AuthProvider, AuthContext } from "../src/context/AuthContexts";
 import "../global.css";
-
+import { SafeAreaProvider } from "react-native-safe-area-context";
 function RootLayoutContent() {
   const { user, loading } = useContext(AuthContext);
 
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size={45} color="#0000ff" />
+        <ActivityIndicator size={70} color="#0000ff" />
       </View>
     );
   }
@@ -32,7 +32,9 @@ function RootLayoutContent() {
 export default function RootLayout() {
   return (
     <AuthProvider>
+      <SafeAreaProvider style={{flex:1}}>
       <RootLayoutContent />
+      </SafeAreaProvider>
     </AuthProvider>
   );
 }

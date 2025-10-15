@@ -1,11 +1,11 @@
-import React, { useState} from "react";
-import {View,Text,TextInput,StatusBar,TouchableOpacity, Platform} from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, StatusBar, TouchableOpacity, Platform } from "react-native";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import HeroSection from "../../src/components/HeroSection";
 import Button from "../../src/components/Button";
 import ModalComponent from "../../src/components/ModalComponent";
 import LoadingComponent from "../../src/components/LoadingComponent";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 const RegisterPage = () => {
   const route = useLocalSearchParams();
   const router = useRouter();
@@ -19,7 +19,7 @@ const RegisterPage = () => {
   const [modalIcon, setModalIcon] = useState("");
   const [lastSubmittedEmail, setLastSubmittedEmail] = useState("");
   const [loadingModal, setLoadingModal] = useState(false);
-  const [isButton,setIsButton] = useState(true)
+  const [isButton, setIsButton] = useState(true)
   const receivedCode = () => {
     router.push({
       pathname: "/auth/emailVerification",
@@ -36,7 +36,7 @@ const RegisterPage = () => {
 
     // Validate username
     if (username.trim() === "") {
-      setUsernameError("Full name is required");
+      setUsernameError("Field is required");
       hasError = true;
     } else {
       setUsernameError("");
@@ -45,7 +45,7 @@ const RegisterPage = () => {
     // Validate email
     const trimmedEmail = email.trim();
     if (trimmedEmail === "") {
-      setEmailError("Email field is required");
+      setEmailError("Field is required");
       hasError = true;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       setEmailError("Email is not valid");
@@ -73,8 +73,6 @@ const RegisterPage = () => {
       );
 
       const response = await result.json();
-      console.log("LOG", response);
-
       if (!result.ok) {
         if (
           response?.http_code === 409 &&
@@ -102,6 +100,8 @@ const RegisterPage = () => {
         setModalMess("Something went wrong. Please try again.");
         setModalIcon("error");
         setModalVisible(true);
+        setLoadingModal(false)
+        setIsButton(true)
         return;
       }
 
@@ -123,27 +123,28 @@ const RegisterPage = () => {
           params: { username, trimmedEmail },
         });
       }, 2000);
+      setUsername("");
+      setEmail("");
     } catch (error) {
       setLoadingModal(false);
-      console.log("Fetch error:", error);
       setModalMess("A server error occurred. Please try again later.");
       setModalIcon("error");
       setModalVisible(true);
+      setIsButton(true);
     }
   };
 
 
   return (
-    <View className="flex-1 bg-white ">
+    <SafeAreaView className="flex-1 bg-white ">
       <StatusBar barStyle="light-content" backgroundColor="#0000ff" />
       <HeroSection />
 
       <View className="h-full mx-auto p-4 w-full" >
         <View
-          className={`bg-[rgba(255,255,255,0.9)] rounded-xl p-6 ${
-            Platform.OS === "ios" ? " shadow-sm" : ''
-          }`}
-          style={{ marginTop: -200,elevation:5 }}
+          className={`bg-[rgba(255,255,255,0.9)] rounded-xl p-6 ${Platform.OS === "ios" ? " shadow-sm" : ''
+            }`}
+          style={{ marginTop: -200, elevation: 5 }}
         >
           <View className="mb-3">
             <Text className="text-headercolor text-2xl font-medium">
@@ -153,8 +154,8 @@ const RegisterPage = () => {
 
           <Text className="text-xl mb-2 text-headercolor">Enter your name</Text>
           <TextInput
-            className={`border ${usernameError ? "border-red-500" : "border-gray-400"
-              } rounded-md text-lg text-headercolor px-3 py-2`}
+            className={`border  ${usernameError ? "border-red-500 " : "border-gray-400 "
+              } rounded-md text-lg text-headercolor px-3 py-3`}
             placeholder="This is to call you with, in the email"
             value={username}
             onChangeText={(text) => {
@@ -170,9 +171,9 @@ const RegisterPage = () => {
             Enter your email address
           </Text>
           <TextInput
-            className={`border ${emailError ? "border-red-500" : "border-gray-400"
-              } rounded-md text-lg text-headercolor px-3 py-2`}
-            placeholder="You will use this for account recovery etc"
+            className={`border ${emailError ? "border-red-500 " : "border-gray-400"
+              } rounded-md text-lg text-headercolor px-3 py-3`}
+            placeholder="You will use this for account recovery "
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
@@ -229,7 +230,7 @@ const RegisterPage = () => {
         visible={loadingModal}
       />
 
-    </View>
+    </SafeAreaView>
   );
 };
 

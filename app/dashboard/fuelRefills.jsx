@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const fuelRefills = () => {
+const FuelRefills = () => {
   return (
     <View>
       <Text>fuelRefills</Text>
@@ -9,4 +9,4 @@ const fuelRefills = () => {
   )
 }
 
-export default fuelRefills
+export default FuelRefills

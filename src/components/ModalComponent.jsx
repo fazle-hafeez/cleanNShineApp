@@ -17,7 +17,7 @@ const ModalComponent = ({ visible, onClose, message, errorType,isButton = true})
 
   return (
     <Modal transparent={true} visible={visible} animationType="fade">
-      <View className="flex-1 justify-center items-center bg-black/75">
+      <View className="flex-1 justify-center items-center bg-black/80">
         <View className="bg-[rgba(255,255,255,0.9)] p-6 rounded-2xl w-11/12 max-w-sm items-center">
           <View className="mb-1">
             {errorType === "warning" ? (

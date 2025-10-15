@@ -8,6 +8,7 @@ import ModalComponent from "../../src/components/ModalComponent";
 import { AuthContext } from "../../src/context/AuthContexts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingComponent from "../../src/components/LoadingComponent";
+import PasswordInputField from "../../src/components/ToggleField";
 const SignUpPage = () => {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -23,20 +24,19 @@ const SignUpPage = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
   const [modalErrorType, setModalErrorType] = useState("");
   const [isButton, setIsButton] = useState(true);
-  const [token, setToken] = useState("");
+  const [tokens, setTokens] = useState({});
   const [loading, setLoading] = useState(false)
-  // const route = useLocalSearchParams()
-  //    console.log(route.trimmedEmail);
   useEffect(() => {
     const getToken = async () => {
       try {
-        const refreshToken = await AsyncStorage.getItem("refreshToken");
-
-        if (refreshToken) {
-          console.log(" Token found in registerNewUser:", refreshToken);
-          setToken(refreshToken);
-        } else {
-          console.log(" No token found in AsyncStorage.");
+        const getTokens = await AsyncStorage.getItem("tokens");
+        const Tokens = JSON.parse(getTokens)
+        const issuedTime = new Date(Number(Tokens.issuedAt) * 1000).toLocaleTimeString();
+        const expiresTime = new Date(Number(Tokens.accessExpires) * 1000).toLocaleTimeString();
+        console.log(" Issued at:", issuedTime);
+        console.log(" Expires at:", expiresTime);
+        if (Tokens) {
+          setTokens(Tokens);
         }
       } catch (error) {
         console.log(" Failed to fetch token:", error);
@@ -73,7 +73,8 @@ const SignUpPage = () => {
       setConfirmPassError("Field is required");
       hasError = true;
     }
-
+       console.log(username,password,confirmPassword);
+       
     // Password match validation
     if (
       trimmedPassword !== "" &&
@@ -91,7 +92,7 @@ const SignUpPage = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(tokens ? { Authorization: `Bearer ${tokens?.accessToken}` } : {}),
         },
         body: JSON.stringify({
           username: trimmedUsername,
@@ -99,27 +100,11 @@ const SignUpPage = () => {
           confirm_password: trimmedConfirmPassword,
         }),
       });
-
-      // const text = await response.text(); 
-      // console.log("Raw response text:", text);
-
-      // let result = null;
-      // if (text && text.trim() !== "") {
-      //   try {
-      //     result = JSON.parse(text);
-      //   } catch {
-      //     console.log("Invalid JSON received:", text);
-      //   }
-      // }
       const result = await response.json()
-      console.log(result);
-
-
-      //  Handle even if result is null
       if (result.status === "success") {
         await login(
           { username: trimmedUsername },
-          result?.token ?? null,  // safe fallback
+          result?.token ?? null,
           { remember: false, keepLoggedIn: false }
         );
         setLoading(false);
@@ -130,17 +115,17 @@ const SignUpPage = () => {
 
         setTimeout(() => {
           setModalVisibility(false);
-          router.push("/dashboard/dashboardPage");
-        }, 2000);
-      }else if(result.restart === true){
-         setLoading(false);
+          router.push("/auth/signup");
+        }, 3000);
+      } else if (result.restart === true) {
+        setLoading(false);
         setModalMess(result?.data);
         setModalErrorType("error");
         setModalVisibility(true);
-        setIsButton(false);
+        setIsButton(true);
         setTimeout(() => {
           setModalVisibility(false);
-          router.push("/");
+          router.push("/auth/login");
         }, 2000);
 
       } else {
@@ -199,77 +184,24 @@ const SignUpPage = () => {
 
           {/* Password field */}
           <Text className="text-xl mb-2 text-headercolor mt-2">Enter your password</Text>
-          <View
-            style={{ position: "relative" }}
-            className={`rounded-md border ${passError ? "border-red-500" : "border-gray-400"
-              }`}
-          >
-            <TextInput
-              className="rounded-md text-lg text-headercolor pr-10 p-3"
-              placeholder="Type your password here"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={(val) => {
-                setPassword(val);
-                setPassError("");
-              }}
-              autoCapitalize="none"
-              style={{ paddingRight: 40 }}
-            />
-            <TouchableOpacity
-              onPress={() => setShowPassword((s) => !s)}
-              style={styles.input}
-            >
-              <Ionicons
-                name={showPassword ? "eye" : "eye-off"}
-                size={24}
-                color="#646060ff"
-              />
-            </TouchableOpacity>
-          </View>
-          {passError ? (
-            <Text className="text-sm text-red-500 my-1">{passError}</Text>
-          ) : null}
+          <PasswordInputField
+           password={password}
+           setPassword={setPassword}
+           passwordError={passError}
+           setPasswordError={setPassError}
+           placeholder={"Type your password here"}
+          />
 
           {/* Confirm password */}
           <Text className="text-xl mb-2 text-headercolor mt-2">Confirm password</Text>
-          <View
-            style={{ position: "relative" }}
-            className={`rounded-md border ${confirmPassError ? "border-red-500" : "border-gray-400"
-              }`}
-          >
-            <TextInput
-              className="rounded-md text-lg text-headercolor pr-10 p-3"
-              placeholder="Type your c-password here"
-              secureTextEntry={!showConfirmPassword}
-              value={confirmPassword}
-              onChangeText={(val) => {
-                setConfirmPassword(val);
-                setConfirmPassError("");
 
-                // Optional: clear mismatch error as user types
-                if (val === password) {
-                  setPassError("");
-                }
-              }}
-              autoCapitalize="none"
-              style={{ paddingRight: 40 }}
-            />
-            <TouchableOpacity
-              onPress={() => setShowConfirmPassword((s) => !s)}
-              style={styles.input}
-            >
-              <Ionicons
-                name={showConfirmPassword ? "eye" : "eye-off"}
-                size={24}
-                color="#646060ff"
-              />
-            </TouchableOpacity>
-          </View>
-          {confirmPassError ? (
-            <Text className="text-sm text-red-500 my-1">{confirmPassError}</Text>
-          ) : null}
-
+          <PasswordInputField
+            password={confirmPassword}
+            setPassword={setConfirmPassword}
+            passwordError={confirmPassError}
+            setPasswordError={setConfirmPassError}
+           placeholder={"Type your C-password here"}
+          />
 
           {/* Submit button */}
           <View className="mt-2">

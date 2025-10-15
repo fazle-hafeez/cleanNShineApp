@@ -3,6 +3,7 @@ import { View, Text, TextInput, StatusBar,Platform } from "react-native";
 import { useRouter } from "expo-router";
 import HeroSection from "../../src/components/HeroSection";
 import Button from "../../src/components/Button";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function ResetPassword() {
     const router = useRouter()
     const [resetEmail, setResetEmail] = useState("");
@@ -12,24 +13,24 @@ export default function ResetPassword() {
         let hasError = false;
 
         if (resetEmail.trim() === "") {
-            setEmailFieldMess("email field is required");
+            setEmailFieldMess("Field is required");
             setResetEmailError(true);
             hasError = true
         }
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail.trim())) {
-            setEmailFieldMess("email field is required");
+            setEmailFieldMess("invalid email address");
             setResetEmailError(true);
             hasError = true
         }
         if (hasError) return;
-        router.push({ pathname: "/emailVerification", params: { changePassword: true, resetEmail } })
+        router.push({ pathname: "/auth/emailVerification", params: { changePassword: true, resetEmail } })
     };
 
     return (
-        <View className="flex-1">
+        <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="light-content" backgroundColor="#0000ff" />
             <HeroSection />
-            <View className="p-4">
+            <View className="flex-1 p-4">
                 <View className={`bg-[rgba(255,255,255,0.9)] rounded-xl p-6 ${Platform.OS === "ios" ? " shadow-sm" : ''
                     }`}
                     style={{ marginTop: -180, elevation: 5 }}>
@@ -42,6 +43,8 @@ export default function ResetPassword() {
                             }`}
                         placeholder="Enter your email address"
                         value={resetEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
                         onChangeText={(val) => {
                             setResetEmail(val);
                             setEmailFieldMess("");
@@ -50,7 +53,7 @@ export default function ResetPassword() {
                     />
                     {
                         resetEmailError ? (
-                            <Text className="text-sm text-red-500 my-1">{emailFieldMess}</Text>
+                            <Text className="text-sm text-red-500 mt-1">{emailFieldMess}</Text>
                         ) : null
                     }
                     <View className="mt-2">
@@ -58,7 +61,7 @@ export default function ResetPassword() {
                     </View>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
