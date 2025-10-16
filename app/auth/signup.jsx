@@ -89,7 +89,7 @@ const SignUpPage = () => {
     setPassError("Field is required");
     hasError = true;
   }
-  
+
   if (hasError) return;
 
   setLoading(true);
@@ -99,21 +99,29 @@ const SignUpPage = () => {
     const payload = {
       username: cleanUsername,
       password: password,
+      keep_logged_in: keepLoggedIn, 
     };
-    const response = await fetch("https://trackingdudes.com/apis/tokens/new/", {
+
+    const response = await fetch("https://trackingdudes.com/apis/tokens/refresh/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
+
     const result = await response.json();
-    console.log(" API Result:", result);
+    console.log("API Result:", result);
 
     if (result.status === "success" && result.tokens) {
+      //  Save tokens
       await AsyncStorage.setItem("tokens", JSON.stringify(result.tokens));
+
+      //  Remember username locally if checked
       if (remember) {
         await AsyncStorage.setItem("rememberedEmail", cleanUsername);
+      } else {
+        await AsyncStorage.removeItem("rememberedEmail");
       }
 
       setModalErrorType("success");
@@ -121,6 +129,7 @@ const SignUpPage = () => {
       setModalVisibility(true);
       setIsButton(false);
 
+      //  Navigate after short delay
       setTimeout(() => {
         setModalVisibility(false);
         router.push("/dashboard/dashboardPage");
@@ -131,7 +140,7 @@ const SignUpPage = () => {
       setModalVisibility(true);
     }
   } catch (error) {
-    console.error(" Login failed:", error);
+    console.error("Login failed:", error);
     setModalErrorType("error");
     setModalMess("Something went wrong. Please try again.");
     setModalVisibility(true);
@@ -139,8 +148,6 @@ const SignUpPage = () => {
     setLoading(false);
   }
 };
-
-
   return (
     <SafeAreaView className="flex-1 bg-white">
       <StatusBar barStyle="light-content" backgroundColor="#0000ff" />

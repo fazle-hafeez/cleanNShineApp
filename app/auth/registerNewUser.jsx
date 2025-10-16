@@ -16,10 +16,6 @@ const SignUpPage = () => {
   const [passError, setPassError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPassError, setConfirmPassError] = useState("");
-  const [remember, setRemember] = useState(true);
-  const [keepLoggedIn, setKeepLoggedIn] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [modalMess, setModalMess] = useState("");
   const [modalVisibility, setModalVisibility] = useState(false);
   const [modalErrorType, setModalErrorType] = useState("");
@@ -143,6 +139,8 @@ const SignUpPage = () => {
       setModalMess("Network error: " + error.message);
       setModalErrorType("error");
       setModalVisibility(true);
+    }finally{
+      setLoading(false)
     }
 
   }
@@ -210,7 +208,7 @@ const SignUpPage = () => {
           <View className="border border-gray-200 my-2"></View>
           <View className="flex-row flex-nowrap">
             <Text className="text-xl font-medium text-headercolor">Already have an account? </Text>
-            <Link href="/signup" className="text-blue underline text-xl">Login</Link>
+            <Link href="/auth/signup" className="text-blue underline text-xl">Login</Link>
           </View>
         </View>
       </View>
