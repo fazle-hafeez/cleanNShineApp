@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 
 export default function OtherPages() {
   return (
-    <Stack >
+    <Stack screenOptions={{headerShown:false}}>
       <Stack.Screen  name="expenses"/>
       <Stack.Screen  name="home"/>
       <Stack.Screen  name="inventory"/>

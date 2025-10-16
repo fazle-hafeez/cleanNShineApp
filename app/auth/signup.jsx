@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, TextInput, StatusBar, TouchableOpacity, Platform, StyleSheet } from "react-native";
+import { View, Text, TextInput, StatusBar, Platform } from "react-native";
 import Checkbox from "expo-checkbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import HeroSection from "../../src/components/HeroSection";
 import Button from "../../src/components/Button";
 import ModalComponent from "../../src/components/ModalComponent";

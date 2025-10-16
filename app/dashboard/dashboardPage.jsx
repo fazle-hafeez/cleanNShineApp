@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useNavigation } from '@react-navigation/native';
@@ -11,7 +11,7 @@ export default function Dashboard() {
     return (
 
         <SafeAreaView className="flex-1  relative">
-            <View className="flex-1 bg-[#eef3f9]">
+            <ScrollView className="flex-1 bg-[#eef3f9]">
             <View className="flex-row items-center bg-blue px-4 py-3 "
             style={{position:'fixed'}}>
                 <Entypo name="menu" size={30} color="white"  onPress={() => navigation.dispatch(DrawerActions.openDrawer())}/>
@@ -57,7 +57,7 @@ export default function Dashboard() {
                 />
 
             </Section>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }

@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from "react-native-safe-area-context";
+import PageHeader from '../../src/components/PageHeader';
+import Tabs from '../../src/components/Tabs';
 const CURRENT_DATE = '10-13 2025';
 
 export default function ShiftsData() {
@@ -12,33 +14,12 @@ export default function ShiftsData() {
 
   const timeFilters = ['this-week', 'prev-week', 'this-month', 'others'];
 
-  const tabs = ['Open', 'Pending', 'Closed', 'All','Missed'];
-
+  const tabs = ['Open', 'Pending', 'Closed', 'All', 'Missed'];
+  const message = `It seems that you have selected an incorrect set of projects, or you may not have saved any projects, or the projects might have been discontinued. Please review the applied filters...`
   const FilterChip = ({ label, iconName }) => (
-    <View className="flex-row items-center bg-blue rounded-full px-4 py-2 mr-2 mb-2">
+    <View className="flex-row items-center bg-blue rounded-full px-4 py-2 mr-2 ">
       {iconName && <Ionicons name={iconName} size={16} color="white" className="mr-1" />}
       <Text className="text-white text-sm font-semibold">{label}</Text>
-    </View>
-  );
-
-
-  const TabsSection = () => (
-    <View className="mt-6 bg-white p-5  shadow-md rounded-lg">
-      <View className="flex-row">
-        {tabs.map(tab => (
-          <TouchableOpacity
-            key={tab}
-            onPress={() => setActiveTab(tab)}
-            className={`mr-6 pb-1 ${activeTab === tab ? 'border-b-2 border-blue' : ''}`}
-          >
-            <Text
-              className={`text-md font-semibold ${activeTab === tab ? 'text-blue' : 'text-gray-500'}`}
-            >
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
     </View>
   );
 
@@ -47,8 +28,8 @@ export default function ShiftsData() {
     if (activeTab === 'Open') {
       return (
         <View className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
-          <Text className="text-gray-700 text-base">
-            open shifts
+          <Text className="text-gray-700 text-lg">
+            {message}
           </Text>
         </View>
       );
@@ -57,8 +38,8 @@ export default function ShiftsData() {
     if (activeTab === 'Pending') {
       return (
         <View className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
-          <Text className="text-gray-700 text-base">
-            pending shifts
+          <Text className="text-gray-700 text-lg">
+             {message}
           </Text>
         </View>
       );
@@ -67,18 +48,18 @@ export default function ShiftsData() {
     if (activeTab === 'Closed') {
       return (
         <View className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
-          <Text className="text-gray-700 text-base">
-            Closed
+          <Text className="text-gray-700 text-lg">
+             {message}
           </Text>
         </View>
       );
     }
 
-     if (activeTab === 'All') {
+    if (activeTab === 'All') {
       return (
         <View className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
-          <Text className="text-gray-700 text-base">
-            All Shifts
+          <Text className="text-gray-700 text-lg">
+             {message}
           </Text>
         </View>
       );
@@ -87,8 +68,8 @@ export default function ShiftsData() {
     // Default return for 'Last' or any unhandled tab
     return (
       <View className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
-        <Text className="text-gray-700 text-base">
-          Missed shifts
+        <Text className="text-gray-700 text-lg">
+             {message}
         </Text>
       </View>
     );
@@ -97,7 +78,7 @@ export default function ShiftsData() {
 
   const TabsHeader = ({ label }) => {
     return (
-      <Text className="text-lg font-bold text-gray-800 px-2 ">
+      <Text className="text-lg font-bold text-gray-800 px-2 mt-2">
         {label}
       </Text>
     )
@@ -123,65 +104,39 @@ export default function ShiftsData() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <View className="bg-blue flex-row justify-between items-center h-12 px-2">
-        <View className="flex-row items-center">
-          <Ionicons name="close" size={30} color="white" onPress={() => router.back()} />
-          <Text className="text-white text-xl ml-2">Shift tracking</Text>
-        </View>
-
-        <TouchableOpacity
-          className=" bg-white w-6 h-6 flex-row justify-center items-center rounded-full"
-        >
-          <Ionicons color="dark" name='unknown' size={15} />
-        </TouchableOpacity>
-      </View>
-
-      <View className="p-4 flex-1">
-        <View className="mb-6">
-          <View className="flex-row mt-4 mb-4 bg-white p-5 rounded-md"
-            style={{ elevation: 2 }}>
-            {timeFilters.map(filter => (
-              <TouchableOpacity
-                key={filter}
-                onPress={() => setActiveTimeFilter(filter)}
-                className={`mr-4 pb-1 ${activeTimeFilter === filter ? 'border-b-2 border-blue' : ''}`}
-              >
-                <Text
-                  className={`text-md font-medium ${activeTimeFilter === filter ? 'text-blue' : 'text-gray-500'}`}
-                >
-                  {filter}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+    <SafeAreaView className="flex-1 bg-gray-100">
+      <PageHeader  routes="Shift Tracking"/>
+      <View className="px-3 flex-1">
+          <View className="my-4">
+           <Tabs 
+             tabs={timeFilters}
+             activeTab={activeTimeFilter}
+             setActiveTab={setActiveTimeFilter}
+           />
+           </View>
 
           <View className="flex-row items-center justify-between mb-4 px-2">
             <View className="flex-row">
               <Ionicons name="filter" size={24} color="#3b82f6" />
-              <Text className="text-2xl font-bold text-gray-800 ml-2">Filters</Text>
+              <Text className="text-2xl font-semibold text-headercolor ml-2">Filters</Text>
             </View>
 
             <View className="flex-row items-center">
-              <Text className="text-green-600 font-semibold text-xl">add shift</Text>
-              <TouchableOpacity
-                className="bg-green-600 justify-center items-center rounded-full h-6 w-6
-                       ml-2">
-                <Ionicons name='add' size={15} color={"white"} />
+              <Text className="text-green-500 font-semibold text-lg">add shift</Text>
+              <TouchableOpacity className="ml-2">
+                <Ionicons name="add-circle" size={22} color="#10b981" />
               </TouchableOpacity>
             </View>
           </View>
 
 
-          <View className="flex-row flex-wrap">
+          <View className="flex-row flex-wrap mb-4">
             <FilterChip label={`dates: ${CURRENT_DATE} to ${CURRENT_DATE}`} />
             <FilterChip label="project: all" />
-            <FilterChip label="vehicle: all" />
           </View>
-        </View>
 
 
-        <View className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+        <View className="bg-white px-3 py-4 rounded-lg shadow-md border border-gray-200">
           <View className="flex-row justify-between items-center">
             <Text className="text-xl font-bold text-gray-800">Trip tracking</Text>
             <TouchableOpacity>
@@ -190,17 +145,21 @@ export default function ShiftsData() {
           </View>
         </View>
 
-
-        <TabsSection />
-
+         
+         <View className="mt-4">
+          <Tabs 
+           tabs={tabs}
+           activeTab={activeTab}
+           setActiveTab={setActiveTab}   
+          />
+         </View>
         <View className="mt-2">
           {/* FIX 1: The Tabs Header is now correctly rendered */}
           <ShowTabsHeaders />
           {/* FIX 2: Call the TabContent component to show the main content area */}
           <TabContent />
         </View>
-      </View>
-
+         </View>
     </SafeAreaView>
   );
 }

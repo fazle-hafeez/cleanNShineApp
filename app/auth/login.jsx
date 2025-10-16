@@ -32,6 +32,7 @@ const RegisterPage = () => {
   };
 
   const handleLogin = async () => {
+    router.push("/dashboard/dashboardPage")
     let hasError = false;
 
     // Validate username
