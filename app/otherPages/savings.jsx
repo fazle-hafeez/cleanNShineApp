@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-
-const savings = () => {
+import { SafeAreaView } from "react-native-safe-area-context";
+const Savings = () => {
   return (
-    <View>
+    <SafeAreaView className="flex-1">
       <Text>savings</Text>
-    </View>
+    </SafeAreaView>
   )
 }
 
-export default savings
+export default Savings

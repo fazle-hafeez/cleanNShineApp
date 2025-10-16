@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, TextInput, StatusBar, TouchableOpacity, StyleSheet, Platform } from "react-native";
+import { View, Text, TextInput, StatusBar, StyleSheet, Platform } from "react-native";
 import { Link, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import HeroSection from "../../src/components/HeroSection";
 import Button from "../../src/components/Button";
 import ModalComponent from "../../src/components/ModalComponent";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../../src/context/AuthContexts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingComponent from "../../src/components/LoadingComponent";
@@ -69,8 +69,8 @@ const SignUpPage = () => {
       setConfirmPassError("Field is required");
       hasError = true;
     }
-       console.log(username,password,confirmPassword);
-       
+    console.log(username, password, confirmPassword);
+
     // Password match validation
     if (
       trimmedPassword !== "" &&
@@ -139,18 +139,18 @@ const SignUpPage = () => {
       setModalMess("Network error: " + error.message);
       setModalErrorType("error");
       setModalVisibility(true);
-    }finally{
+    } finally {
       setLoading(false)
     }
 
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white">
       <StatusBar barStyle="light-content" backgroundColor="#0000ff" />
       <HeroSection />
 
-      <View className="flex-1 f-full p-4">
+      <View className="flex-1  p-4">
         <View
           className={`bg-[rgba(255,255,255,0.9)] rounded-xl p-6 ${Platform.OS === "ios" ? " shadow-sm" : ''
             }`}
@@ -183,11 +183,11 @@ const SignUpPage = () => {
           {/* Password field */}
           <Text className="text-xl mb-2 text-headercolor mt-2">Enter your password</Text>
           <PasswordInputField
-           password={password}
-           setPassword={setPassword}
-           passwordError={passError}
-           setPasswordError={setPassError}
-           placeholder={"Type your password here"}
+            password={password}
+            setPassword={setPassword}
+            passwordError={passError}
+            setPasswordError={setPassError}
+            placeholder={"Type your password here"}
           />
 
           {/* Confirm password */}
@@ -198,7 +198,7 @@ const SignUpPage = () => {
             setPassword={setConfirmPassword}
             passwordError={confirmPassError}
             setPasswordError={setConfirmPassError}
-           placeholder={"Type your C-password here"}
+            placeholder={"Type your C-password here"}
           />
 
           {/* Submit button */}
@@ -225,17 +225,8 @@ const SignUpPage = () => {
       <LoadingComponent
         visible={loading}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  input: {
-    position: "absolute",
-    right: 8,
-    top: "50%",
-    transform: [{ translateY: -14 }],
-    padding: 4,
-  }
-})
 export default SignUpPage

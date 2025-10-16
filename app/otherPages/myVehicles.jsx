@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-
-const myVehicles = () => {
+import { SafeAreaView } from "react-native-safe-area-context";
+const MyVehicles = () => {
   return (
-    <View>
+    <SafeAreaView className="flex-1">
       <Text>myVehicles</Text>
-    </View>
+    </SafeAreaView>
   )
 }
 
-export default myVehicles
+export default MyVehicles

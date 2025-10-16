@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-
-const timeSpent = () => {
+import { SafeAreaView } from "react-native-safe-area-context";
+const TimeSpent = () => {
   return (
-    <View>
+    <SafeAreaView className="flex-1">
       <Text>timeSpent</Text>
-    </View>
+    </SafeAreaView>
   )
 }
 
-export default timeSpent
+export default TimeSpent

@@ -4,6 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
 const Home = () => {
@@ -13,7 +14,7 @@ const Home = () => {
   };
 
   return (
-    <View className="flex-1 bg-black">
+    <SafeAreaView className="flex-1 bg-black">
       <StatusBar barStyle="light-content" backgroundColor="#0000ff" />
       <ImageBackground
         source={require("../../assets/images/clean5.png")}
@@ -85,7 +86,7 @@ const Home = () => {
 
       <View className="bg-white m-3 h-12 justify-center"></View>
       <View className="bg-white flex-1"></View>
-    </View>
+    </SafeAreaView>
   );
 };
 

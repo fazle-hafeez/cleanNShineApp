@@ -1,15 +1,16 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome5, MaterialIcons, Entypo } from '@expo/vector-icons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerActions } from '@react-navigation/native';
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from 'expo-router';
 export default function Dashboard() {
     const navigation = useNavigation(); //use for drawer hide show etc .....
     const router = useRouter() // use  for routing ....
     return (
 
-        <ScrollView className="flex-1  relative">
+        <SafeAreaView className="flex-1  relative">
             <View className="flex-1 bg-[#eef3f9]">
             <View className="flex-row items-center bg-blue px-4 py-3 "
             style={{position:'fixed'}}>
@@ -57,7 +58,7 @@ export default function Dashboard() {
 
             </Section>
             </View>
-        </ScrollView>
+        </SafeAreaView>
     );
 }
 

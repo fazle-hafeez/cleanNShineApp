@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-
-const inventory = () => {
+import { SafeAreaView } from "react-native-safe-area-context";
+const Inventory = () => {
   return (
-    <View>
+    <SafeAreaView className="flex-1">
       <Text>inventory</Text>
-    </View>
+    </SafeAreaView>
   )
 }
 
-export default inventory
+export default Inventory

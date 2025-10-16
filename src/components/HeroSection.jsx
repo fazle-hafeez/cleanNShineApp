@@ -30,7 +30,7 @@ const HeroSection = () => {
             resizeMode={'cover'}
         >
             <View className="bg-blue p-4" >
-                <Text className="text-white text-2xl text-center font-semibold font-serif">
+                <Text className="text-white text-2xl text-center font-semibold ">
                     TRACKING DUDES LLC
                 </Text>
             </View>

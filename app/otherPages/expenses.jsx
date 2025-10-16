@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-
-const expenses = () => {
+import { SafeAreaView } from "react-native-safe-area-context";
+const Expenses = () => {
   return (
-    <View>
+    <SafeAreaView className="flex-1">
       <Text>expenses</Text>
-    </View>
+    </SafeAreaView>
   )
 }
 
-export default expenses
+export default Expenses

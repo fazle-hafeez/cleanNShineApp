@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from "react-native-safe-area-context";
 const CURRENT_DATE = '10-13 2025';
 
 export default function ShiftsData() {
@@ -109,7 +110,7 @@ export default function ShiftsData() {
     }
 
     return (
-        <ScrollView className="flex-1 bg-gray-50">
+        <SafeAreaView className="flex-1 bg-gray-50">
           <View className="bg-blue flex-row justify-between items-center h-12 px-2">
              <View className="flex-row items-center">
               <Ionicons name="close"  size={30} color="white" onPress={()=> router.back()}/>
@@ -177,6 +178,6 @@ export default function ShiftsData() {
             </View>
            </View>
 
-        </ScrollView>
+        </SafeAreaView>
     );
 }
