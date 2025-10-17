@@ -12,8 +12,10 @@ const MyVehicles = () => {
       <View className="px-4 bg-gray-100">
         <View className="bg-white rounded-lg shadow-md flex-row justify-between p-4 my-4">
           <View className="flex-row ">
-            <FontAwesome5 name="car" size={24} color="black" />
-            <Link href="/dashboard/dashboardPage" className='text-lg ml-2 font-medium' > Add a vehicle </Link>
+            <FontAwesome5 name="car" size={24} color="#198754" />
+            <Link href="/dashboard/dashboardPage" className='text-lg ml-3 font-medium text-[#198754]' >
+             Add a vehicle 
+             </Link>
           </View>
           <TouchableOpacity>
             <Ionicons name="add-circle" size={26} color="#10b981" />

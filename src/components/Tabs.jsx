@@ -5,7 +5,7 @@ import React from 'react'
 const Tabs = ({tabs=[],activeTab,setActiveTab,}) => {
   return (
     <View className=" bg-white p-4  shadow-md rounded-lg">
-      <View className="flex-row justify-between">
+      <View className="flex-row justify-between ">
         {tabs.map(tab => (
           <TouchableOpacity
             key={tab}
