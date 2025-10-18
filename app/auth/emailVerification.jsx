@@ -1,35 +1,45 @@
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StatusBar, Platform } from "react-native"
+import { View, Text, TextInput, TouchableOpacity, StatusBar, Platform } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import HeroSection from "../../src/components/HeroSection";
 import Button from "../../src/components/Button";
 import LoadingComponent from "../../src/components/LoadingComponent";
 import ModalComponent from "../../src/components/ModalComponent";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useApi } from "../../src/hooks/useApi";
+
 const EmailVerification = () => {
     const router = useRouter();
+    const { post, put, loading } = useApi();
+    const {
+        trimmedEmail,
+        changePassword,
+        enableBtn,
+        reastartEmail,
+        resetEmail,
+    } = useLocalSearchParams();
 
     const [code, setCode] = useState("");
     const [otpError, setOtpError] = useState("");
     const [wrongAttempts, setWrongAttempts] = useState(0);
     const [isBlocked, setIsBlocked] = useState(false);
-    const [blockTimer, setBlockTimer] = useState(180); // 3 minutes
+    const [blockTimer, setBlockTimer] = useState(180); // 3 min block
     const [resendTimer, setResendTimer] = useState(60);
     const [restartTimer, setRestartTimer] = useState(30);
     const [canResend, setCanResend] = useState(false);
     const [canRestart, setCanRestart] = useState(false);
-    const [loading, setLoading] = useState(false);
+
     const [modalVisibility, setModalVisibility] = useState(false);
     const [modalMess, setModalMess] = useState("");
     const [modalErrorType, setModalErrorType] = useState("");
     const [isButton, setIsButton] = useState(true);
-    const { trimmedEmail, changePassword, enableBtn, reastartEmail, resetEmail } = useLocalSearchParams();
 
-    // Disable all buttons during block or loading
     const isAllDisabled = isBlocked || loading;
 
-    // Format seconds to mm:ss
+    // Format mm:ss
     const formatTime = (seconds) => {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
@@ -38,34 +48,34 @@ const EmailVerification = () => {
 
     // Timers
     useEffect(() => {
-        const interval = setInterval(() => {
+        const resendInterval = setInterval(() => {
             setResendTimer((prev) => {
                 if (prev <= 1) {
-                    clearInterval(interval);
+                    clearInterval(resendInterval);
                     setCanResend(true);
                     return 0;
                 }
                 return prev - 1;
             });
         }, 1000);
-        return () => clearInterval(interval);
+        return () => clearInterval(resendInterval);
     }, []);
 
     useEffect(() => {
-        const interval = setInterval(() => {
+        const restartInterval = setInterval(() => {
             setRestartTimer((prev) => {
                 if (prev <= 1) {
-                    clearInterval(interval);
+                    clearInterval(restartInterval);
                     setCanRestart(true);
                     return 0;
                 }
                 return prev - 1;
             });
         }, 1000);
-        return () => clearInterval(interval);
+        return () => clearInterval(restartInterval);
     }, []);
 
-    // 3-minute block timer
+    // 3-min block timer
     useEffect(() => {
         let interval;
         if (isBlocked) {
@@ -75,7 +85,7 @@ const EmailVerification = () => {
                         clearInterval(interval);
                         setIsBlocked(false);
                         setWrongAttempts(0);
-                        setBlockTimer(180); // reset
+                        setBlockTimer(180);
                         return 180;
                     }
                     return prev - 1;
@@ -88,87 +98,70 @@ const EmailVerification = () => {
     // Submit OTP
     const submitCode = async () => {
         if (isBlocked) return;
-        if (code.trim() === "") {
+        if (!code.trim()) {
             setOtpError("Field is required!");
             return;
         }
 
-        setLoading(true);
         try {
-            const result = await fetch("https://trackingdudes.com/apis/register/verify-email/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code }),
-            });
-
-            const response = await result.json();
+            const response = await post("/register/verify-email/", { code });
             console.log(response);
-            //  If backend says success
+
             if (response.status === "success") {
-                setLoading(false);
                 setModalMess(response.data || "Email verified successfully!");
                 setModalErrorType("success");
+                setModalVisibility(true);
+                setIsButton(false);
+
                 const tokens = {
                     accessToken: response?.tokens?.access,
                     accessExpires: response?.tokens?.accessExpires,
-                    issuedAt: response?.tokens?.issuedAt
+                    issuedAt: response?.tokens?.issuedAt,
                 };
-                try {
-                    await AsyncStorage.setItem("tokens", JSON.stringify(tokens));
-                    setModalVisibility(true);
-                    setIsButton(false);
-                    setTimeout(() => {
-                        setModalVisibility(false);
-                        router.push({
-                            pathname: changePassword ? "/auth/changePassword" : "/auth/registerNewUser",
-                            params: { trimmedEmail: changePassword ? resetEmail : trimmedEmail },
-                        });
-                    }, 2000);
 
-                } catch (err) {
-                    console.log("Failed to saved tokens:", err);
-                }
-            }
+                await AsyncStorage.setItem("tokens", JSON.stringify(tokens));
 
-            //  If backend says error
-            else if (response.status === "error") {
-                setLoading(false);
+                setTimeout(() => {
+                    setModalVisibility(false);
+                    router.push({
+                        pathname: changePassword
+                            ? "/auth/changePassword"
+                            : "/auth/compeleteRegistration",
+                        params: { trimmedEmail: changePassword ? resetEmail : trimmedEmail },
+                    });
+                }, 2000);
+            } else if (response.status === "error") {
                 setWrongAttempts((prev) => {
                     const next = prev + 1;
                     if (next >= 3) {
                         setIsBlocked(true);
-                        setModalMess("You’ve entered the wrong code 3 times. Try again after 3 minutes.");
-                        setModalErrorType("error");
-                        setModalVisibility(true);
-                        setIsButton(true)
+                        setModalMess(
+                            "You’ve entered the wrong code 3 times. Try again after 3 minutes."
+                        );
                     } else {
                         setModalMess(response.data || "Invalid OTP. Please try again.");
-                        setModalErrorType("error");
-                        setModalVisibility(true);
-                        setIsButton(true)
                     }
+                    setModalErrorType("error");
+                    setModalVisibility(true);
+                    setIsButton(true);
                     return next;
                 });
-            }
-            //  Unexpected response
-            else {
-                setLoading(false);
+            } else {
                 setModalMess("Unexpected response from server.");
                 setModalErrorType("error");
                 setModalVisibility(true);
-                setIsButton(true)
+                setIsButton(true);
             }
         } catch (error) {
-            setLoading(false);
-            setModalMess("Something went wrong. Try again later.");
+            console.log("Verify Email Error:", error.message);
+            setModalMess(error.message || "Something went wrong. Try again later.");
             setModalErrorType("error");
             setModalVisibility(true);
-            setIsButton(true)
+            setIsButton(true);
         }
     };
 
-
-    // Restart process
+    // Restart
     const restart = () => {
         router.push({
             pathname: "/auth/login",
@@ -178,36 +171,23 @@ const EmailVerification = () => {
 
     // Resend email
     const sendEmailCode = async () => {
-        setLoading(true);
         try {
-            const response = await fetch(`https://trackingdudes.com/apis/register/resend-email/`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-            });
-
-            const result = await response.json();
-            console.log(result);
-
+            const result = await put("/register/resend-email/");
             if (result.status === "success") {
-                setLoading(false); //  enable buttons again
                 setModalMess("Verification email sent successfully!");
                 setModalErrorType("success");
                 setModalVisibility(true);
-                return;
+            } else {
+                setModalMess(result.data || "Failed to resend verification email.");
+                setModalErrorType("error");
+                setModalVisibility(true);
+                setIsButton(true);
             }
-
-            //  Error case
-            setLoading(false);
-            setModalMess(result.data);
-            setModalErrorType("error");
-            setModalVisibility(true);
-            setIsButton(true)
         } catch (error) {
-            console.log(error);
-            setLoading(false);
+            console.log("Resend Email Error:", error.message);
             setModalMess("Failed to resend verification email. Try again later.");
             setModalErrorType("error");
-            setIsButton(true)
+            setIsButton(true);
             setModalVisibility(true);
         }
     };

@@ -1,15 +1,22 @@
-import React, { useState, useContext, useEffect } from "react";
-import { View, Text, TextInput, StatusBar, StyleSheet, Platform } from "react-native";
+import React, { useState, useContext } from "react";
+import { View, Text, TextInput, StatusBar, Platform } from "react-native";
 import { Link, useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import HeroSection from "../../src/components/HeroSection";
 import Button from "../../src/components/Button";
 import ModalComponent from "../../src/components/ModalComponent";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { AuthContext } from "../../src/context/AuthContexts";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingComponent from "../../src/components/LoadingComponent";
 import PasswordInputField from "../../src/components/ToggleField";
-const SignUpPage = () => {
+
+import { AuthContext } from "../../src/context/AuthContexts";
+import { useApi } from "../../src/hooks/useApi";
+
+const CompleteRegistration = () => {
+  const router = useRouter();
+  const { login } = useContext(AuthContext);
+  const { post, loading } = useApi();
+
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [password, setPassword] = useState("");
@@ -20,90 +27,47 @@ const SignUpPage = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
   const [modalErrorType, setModalErrorType] = useState("");
   const [isButton, setIsButton] = useState(true);
-  const [tokens, setTokens] = useState({});
-  const [loading, setLoading] = useState(false)
-  useEffect(() => {
-    const getToken = async () => {
-      try {
-        const getTokens = await AsyncStorage.getItem("tokens");
-        const Tokens = JSON.parse(getTokens)
-        const issuedTime = new Date(Number(Tokens.issuedAt) * 1000).toLocaleTimeString();
-        const expiresTime = new Date(Number(Tokens.accessExpires) * 1000).toLocaleTimeString();
-        console.log(" Issued at:", issuedTime);
-        console.log(" Expires at:", expiresTime);
-        if (Tokens) {
-          setTokens(Tokens);
-        }
-      } catch (error) {
-        console.log(" Failed to fetch token:", error);
-      }
-    };
 
-    getToken();
-  }, []);
-
-
-  const router = useRouter();
-  const { user, login } = useContext(AuthContext);
-
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     let hasError = false;
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
-    const trimmedConfirmPassword = confirmPassword.trim();
 
-    // Username validation
-    if (trimmedUsername === "") {
+    if (!username.trim()) {
       setUsernameError("Field is required");
       hasError = true;
     }
-
-    // Password validation
-    if (trimmedPassword === "") {
+    if (!password.trim()) {
       setPassError("Field is required");
       hasError = true;
     }
-
-    // Confirm Password validation
-    if (trimmedConfirmPassword === "") {
+    if (!confirmPassword.trim()) {
       setConfirmPassError("Field is required");
       hasError = true;
     }
-    console.log(username, password, confirmPassword);
-
-    // Password match validation
-    if (
-      trimmedPassword !== "" &&
-      trimmedConfirmPassword !== "" &&
-      trimmedPassword !== trimmedConfirmPassword
-    ) {
+    if (password && confirmPassword && password !== confirmPassword) {
       setConfirmPassError("Password and Confirm Password doesn't match");
       hasError = true;
     }
 
     if (hasError) return;
-    setLoading(true);
+
     try {
-      const response = await fetch("https://trackingdudes.com/apis/register/create-user/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(tokens ? { Authorization: `Bearer ${tokens?.accessToken}` } : {}),
+      const result = await post(
+        "/register/create-user/",
+        {
+          username: username.trim(),
+          password: password.trim(),
+          confirm_password: confirmPassword.trim(),
         },
-        body: JSON.stringify({
-          username: trimmedUsername,
-          password: trimmedPassword,
-          confirm_password: trimmedConfirmPassword,
-        }),
-      });
-      const result = await response.json()
+        true // use token
+      );
+
       if (result.status === "success") {
         await login(
-          { username: trimmedUsername },
+          { username },
           result?.token ?? null,
           { remember: false, keepLoggedIn: false }
         );
-        setLoading(false);
+
         setModalMess(result?.data || "User created successfully!");
         setModalErrorType("success");
         setModalVisibility(true);
@@ -114,36 +78,27 @@ const SignUpPage = () => {
           router.push("/auth/signup");
         }, 3000);
       } else if (result.restart === true) {
-        setLoading(false);
-        setModalMess(result?.data);
+        setModalMess(result?.data || "Please log in again.");
         setModalErrorType("error");
         setModalVisibility(true);
         setIsButton(true);
+
         setTimeout(() => {
           setModalVisibility(false);
           router.push("/auth/login");
         }, 2000);
-
       } else {
-        setLoading(false);
-        setModalMess(
-          (result && result.data) ||
-          "Something went wrong. Please try again later."
-        );
+        setModalMess(result?.data || "Something went wrong. Please try again later.");
         setModalErrorType("error");
         setModalVisibility(true);
       }
     } catch (error) {
-      setLoading(false);
-      console.log("Network or parse error:", error.message);
-      setModalMess("Network error: " + error.message);
+      console.log("Registration Error:", error.message);
+      setModalMess(error.message || "Network error occurred.");
       setModalErrorType("error");
       setModalVisibility(true);
-    } finally {
-      setLoading(false)
     }
-
-  }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -229,4 +184,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage
+export default CompleteRegistration

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from "react-native-safe-area-context";
